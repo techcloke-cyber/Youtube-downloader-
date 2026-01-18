@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>YouTube Downloader - Vercel</title>
+    <style>
+        /* Same styling as above */
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>YouTube Downloader</h1>
+        <input type="text" id="url" placeholder="Enter YouTube URL">
+        <select id="format">
+            <option value="mp4">MP4 Video</option>
+            <option value="mp3">MP3 Audio</option>
+        </select>
+        <select id="quality">
+            <option value="720">720p</option>
+            <option value="480">480p</option>
+            <option value="360">360p</option>
+        </select>
+        <button onclick="downloadVideo()">Download</button>
+        <div id="result"></div>
+    </div>
+    
+    <script>
+        async function downloadVideo() {
+            const url = document.getElementById('url').value;
+            const format = document.getElementById('format').value;
+            const quality = document.getElementById('quality').value;
+            const result = document.getElementById('result');
+            
+            result.innerHTML = 'Processing...';
+            
+            try {
+                // Use a free API
+                const response = await fetch(`/api/download?url=${encodeURIComponent(url)}&format=${format}&quality=${quality}`);
+                const data = await response.json();
+                
+                if (data.downloadUrl) {
+                    // Create download link
+                    const link = document.createElement('a');
+                    link.href = data.downloadUrl;
+                    link.download = 'video.' + format;
+                    link.click();
+                    result.innerHTML = 'Download started!';
+                } else {
+                    result.innerHTML = 'Error: ' + (data.error || 'Unknown error');
+                }
+            } catch (error) {
+                result.innerHTML = 'Error: ' + error.message;
+            }
+        }
+    </script>
+</body>
+</html>
